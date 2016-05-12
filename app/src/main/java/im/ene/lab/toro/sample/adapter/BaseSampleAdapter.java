@@ -111,4 +111,8 @@ public abstract class BaseSampleAdapter extends ToroAdapter<ToroAdapter.ViewHold
   @Override public int getItemCount() {
     return 512; // Magic number :trollface:
   }
+
+  public int firstVideoPosition() {
+    return 0;
+  }
 }

@@ -17,15 +17,25 @@
 package im.ene.lab.toro.sample.adapter;
 
 import android.support.annotation.Nullable;
+import android.view.View;
+import android.view.ViewGroup;
+import im.ene.lab.toro.ToroPlayer;
+import im.ene.lab.toro.VideoPlayerManager;
+import im.ene.lab.toro.VideoPlayerManagerImpl;
 import im.ene.lab.toro.sample.data.SimpleObject;
 
 /**
  * Created by eneim on 2/3/16.
  */
-public class SingleVideoSimpleListAdapter extends BaseSampleAdapter {
+public class SingleVideoSimpleListAdapter extends BaseSampleAdapter implements VideoPlayerManager {
 
-  public SingleVideoSimpleListAdapter() {
-    super();
+  private final View.OnClickListener listener;
+
+  private VideoPlayerManagerImpl mDelegate;
+
+  public SingleVideoSimpleListAdapter(View.OnClickListener listener) {
+    this.listener = listener;
+    mDelegate = new VideoPlayerManagerImpl();
   }
 
   @Nullable @Override protected Object getItem(int position) {
@@ -33,5 +43,48 @@ public class SingleVideoSimpleListAdapter extends BaseSampleAdapter {
       return mVideos.get(0);
     }
     return new SimpleObject();
+  }
+
+  @Override public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    final ViewHolder viewHolder = super.onCreateViewHolder(parent, viewType);
+    viewHolder.setOnItemClickListener(listener);
+
+    return viewHolder;
+  }
+
+  @Override public int firstVideoPosition() {
+    return 1;
+  }
+
+  @Override public ToroPlayer getPlayer() {
+    return mDelegate.getPlayer();
+  }
+
+  @Override public void setPlayer(ToroPlayer player) {
+    mDelegate.setPlayer(player);
+  }
+
+  @Override public void onRegistered() {
+    mDelegate.onRegistered();
+  }
+
+  @Override public void onUnregistered() {
+    mDelegate.onUnregistered();
+  }
+
+  @Override public void startPlayback() {
+    mDelegate.startPlayback();
+  }
+
+  @Override public void pausePlayback() {
+    mDelegate.pausePlayback();
+  }
+
+  @Override public void saveVideoState(String videoId, @Nullable Integer position, long duration) {
+    mDelegate.saveVideoState(videoId, position, duration);
+  }
+
+  @Override public void restoreVideoState(String videoId) {
+    mDelegate.restoreVideoState(videoId);
   }
 }

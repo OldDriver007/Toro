@@ -33,6 +33,7 @@ import im.ene.lab.toro.Toro;
 import im.ene.lab.toro.ToroPlayer;
 import im.ene.lab.toro.ToroStrategy;
 import im.ene.lab.toro.sample.R;
+import im.ene.lab.toro.sample.adapter.BaseSampleAdapter;
 import im.ene.lab.toro.sample.widget.DividerItemDecoration;
 import java.util.List;
 
@@ -42,6 +43,7 @@ import java.util.List;
 public abstract class RecyclerViewFragment extends Fragment {
 
   protected RecyclerView mRecyclerView;
+  protected RecyclerView.Adapter mAdapter;
 
   private static final String TAG = "RecyclerViewFragment";
 
@@ -61,9 +63,10 @@ public abstract class RecyclerViewFragment extends Fragment {
       }
 
       @Override public boolean allowsToPlay(ToroPlayer player, ViewParent parent) {
-        boolean allowToPlay =
-            (isFirstPlayerDone || player.getPlayOrder() == 0) && oldStrategy.allowsToPlay(player,
-                parent);
+        boolean allowToPlay = !(mAdapter instanceof BaseSampleAdapter)
+            || (isFirstPlayerDone
+            || player.getPlayOrder() == ((BaseSampleAdapter) mAdapter).firstVideoPosition())
+            && oldStrategy.allowsToPlay(player, parent);
 
         if (player.getPlayOrder() == 0) { // A work-around to keep track of first video on top.
           isFirstPlayerDone = true;
@@ -89,8 +92,9 @@ public abstract class RecyclerViewFragment extends Fragment {
           ((LinearLayoutManager) layoutManager).getOrientation()));
     }
 
+    mAdapter = getAdapter();
     mRecyclerView.setHasFixedSize(false);
-    mRecyclerView.setAdapter(getAdapter());
+    mRecyclerView.setAdapter(mAdapter);
   }
 
   @Override public void onResume() {
